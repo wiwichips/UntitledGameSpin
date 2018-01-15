@@ -23,7 +23,7 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
     double pos = 0, rand;
     int score = 0, time = 0, bullx, bully;
 
-    public CulmWill() {  
+    public CulmWill() {
         frame = new Timer(30, this); //sets the delay between frames
         frame.start(); /// starts the timer
 
@@ -31,12 +31,12 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 time++;
-                
+
                 /// I commented out condition for bullx = 0, this code will 
                 /// determine how long the image of the plane accelerates
-                if (bullx == 0 || time > 150) { //if its off screen 
+                if (bullx == 0 || time > 100) { //if its off screen 
                     time = 0;
-                    rand = Math.random() * Math.PI * 2; /// sets double to a random number between 0 and 6.2
+                    rand = 0;// Math.random() * Math.PI * 2; /// sets double to a random number between 0 and 6.2
                     bullx = (int) (Math.sin(rand) * 400 + 400); //spawn a new one
                     bully = (int) (Math.cos(rand) * 400);
                 }
@@ -81,20 +81,18 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
 //        guy.drawRect(350, 140, 1, 1); // 
 
         guy.rotate(pos, 400, 0); /// rotate Graphics2D guy in circle
-        
+
         /// ALL THE CODE BELOW WILL ROTATE
-        
         ///-800, -600, 45, 45
-        guy.drawImage(new ImageIcon("space.png").getImage(), -550, -950, getWidth()*2+300, getWidth()*2+300, this); /// draw the background image
-        guy.drawImage(new ImageIcon("airplane.png").getImage(), bullx - (20 + (time * time) / 14) / 2, bully - (20 + (time * time) / 14) / 2, 20 + (time * time) / 14, 20 + (time * time ) / 14, this);
+        int size = (int) Math.pow(2, 0.15 * (time));
+        guy.drawImage(new ImageIcon("space.png").getImage(), -550, -950, getWidth() * 2 + 300, getWidth() * 2 + 300, this); /// draw the background image
+        guy.drawImage(new ImageIcon("airplane.png").getImage(), bullx - size / 2, bully - size / 2, size, size, this);
         guy.rotate(-pos, 400, 0); //all the code below wont rotate
-        
+        System.out.println(size);
         /// ALL THE CODE BELOW WILL NOT ROTATE
-        
-        
 //        guy.drawImage(new ImageIcon("man.jpg").getImage(), 350, 300, 100, 150, this);
         guy.drawImage(new ImageIcon("cockpit.png").getImage(), 000, 200, 800, 400, this);
-        
+
         guy.drawLine(400, 0, (int) (Math.cos(-0.15 + (Math.PI / 2)) * 800) + 400, (int) (Math.sin(-0.15 + (Math.PI / 2)) * 800));
         guy.drawLine(400, 0, (int) (Math.cos(0.15 + (Math.PI / 2)) * 800) + 400, (int) (Math.sin(0.15 + (Math.PI / 2)) * 800));
 
@@ -123,7 +121,7 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
         } else if (press[3] == true) {
             //power
         }
-        if (time > 149 && time < 160 && pos <= rand + 0.15 && pos >= rand - 0.15) {
+        if (time > 99 && time < 110 && pos <= rand + 0.15 && pos >= rand - 0.15) {
             System.out.println("GAMEOVER");
             score = 0;
         }
