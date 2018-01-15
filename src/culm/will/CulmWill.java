@@ -85,7 +85,7 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
         /// ALL THE CODE BELOW WILL ROTATE
         
         ///-800, -600, 45, 45
-        guy.drawImage(new ImageIcon("cringegrid.gif").getImage(), -550, -950, getWidth()*2+300, getWidth()*2+300, this); /// draw the background image
+        guy.drawImage(new ImageIcon("space.png").getImage(), -550, -950, getWidth()*2+300, getWidth()*2+300, this); /// draw the background image
         guy.drawImage(new ImageIcon("airplane.png").getImage(), bullx - (20 + (time * time) / 14) / 2, bully - (20 + (time * time) / 14) / 2, 20 + (time * time) / 14, 20 + (time * time ) / 14, this);
         guy.rotate(-pos, 400, 0); //all the code below wont rotate
         
