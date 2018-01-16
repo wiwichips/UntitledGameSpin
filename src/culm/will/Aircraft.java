@@ -17,9 +17,9 @@ public class Aircraft {
     private int posistionY; // the vertical posistion on the screen
     private int radius; // radius from center of the screen
         // Variables involving time 
-    private int timeAlive; // the time since the aircraft has been spawned
+    private int age; // the time since the aircraft has been spawned
         // Variables involving aircraft aesthetics
-    private String colour; // the colour of the aircraft, either "purple" or "yellow"
+    private String colour; // the colour of the aircraft, either "purpleAircraft.png" or "yellowAirCraft.png"
     
     
     /**
@@ -28,17 +28,19 @@ public class Aircraft {
      * @param colour 
      */
     public Aircraft(double angle, String colour){
-        this.colour=colour; 
-        
+        this.colour=colour; // set the colour, either "purpleAircraft.png" or "yellowAirCraft.png"
+        posistionX=angleInRadiansToPosistionX(angle);
+        posistionY=angleInRadiansToPosistionY(angle);
+        age=0;
     }
     
-    public int angleInRadiansToPosistionX(double angle){
+    public final int angleInRadiansToPosistionX(double angle){
         int posistionX; // variable for the horizontal posistion
         posistionX = (int) (Math.sin(angle) * radius + radius); // convert an angle in radians to a horizontal position on a plane with a set radius
         return posistionX; // return statement
     }
     
-    public int angleInRadiansToPosistionY(double angle){
+    public final int angleInRadiansToPosistionY(double angle){
     int posistionY; // variable for the vertical posistion
         posistionY = (int) (Math.cos(angle) * radius); // convert an angle in radians to a vertical position on a plane with a set radius
         return posistionY; // return statement
