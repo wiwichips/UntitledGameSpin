@@ -8,6 +8,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -16,18 +23,19 @@ import javax.swing.Timer;
 public class CulmWill extends JPanel implements ActionListener, KeyListener {
 
     private Graphics dbg;
-    Graphics2D guy;
+    Graphics2D draw;
     Image dbImage;
-    Timer frame;
-    boolean press[] = {false, false, false, false};
+    Timer frame, count;
+    boolean press[] = {false, false, false, false, false};
     double pos = 0, rand;
-    int score = 0, time = 0, bullx, bully;
+    ArrayList<Integer> scores = new ArrayList<Integer>();
+    int score = 0, time = 0, bullx, bully, screen = 0, menu = 2;
 
     public CulmWill() {
         frame = new Timer(30, this); //sets the delay between frames
         frame.start(); /// starts the timer
 
-        Timer count = new Timer(30, new ActionListener() { // this will run the code inside ever 30ms
+        count = new Timer(30, new ActionListener() { // this will run the code inside ever 30ms
             @Override
             public void actionPerformed(ActionEvent e) {
                 time++;
@@ -43,13 +51,19 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
             }
         });
 
-        count.start(); //starts the timer
+        try {
+            FileReader fr = new FileReader("scores.txt");
+            BufferedReader br = new BufferedReader(fr); //reads map from text file
+            for (int i = 0; i < 10; i++) {
+                scores.add(Integer.parseInt(br.readLine()));
+            }
+            fr.close();
+            br.close();
+        } catch (IOException a) {
+            System.out.println("Couldn't Load");
+        }
 
         addKeyListener(this); //checks if keys are pressed
-    }
-
-    public void spawn() {
-
     }
 
     public static void main(String[] args) {
@@ -58,7 +72,7 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
         f.setResizable(false); /// make the window non resizeable
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); /// end program when user closes window
         f.add(panel); /// add the CulmWill panel object to the JFrame f object
-//        f.setUndecorated(true); //Takes away the toolBar
+        //f.setUndecorated(true); //Takes away the toolBar
         f.setSize(800, 600); /// Set the size to 800 width by 600 height
         f.setVisible(true); /// set the visibility to true
         f.setLocationRelativeTo(null); /// center the window
@@ -70,62 +84,114 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
         dbg = dbImage.getGraphics(); /// set the Graphics dbg to graphics of dbImage
         paintComponent(dbg); /// call paint component method with paramater dbg (graphics of dbImage
 
-        g.drawImage(dbImage, 0, 0, this); // call Graphics method on g to drawImage dbImage at top left corner
-
-        g.setFont(new Font("Consolas", Font.PLAIN, 20)); /// set the font for Graphics g to consolas
-        g.drawString("SCORE: " + score, 300, 30); /// draw a string that lists the score at 300 300
+        g.drawImage(dbImage, 0, 0, this); // call Graphics method on g to drawImage dbImage at top left corner        
     }
 
     public void paintComponent(Graphics g) {
-        guy = (Graphics2D) g; /// Graphics2D guy = Graphics g casted as a Graphics2D object
-//        guy.drawRect(350, 140, 1, 1); // 
+        draw = (Graphics2D) g; /// Graphics2D draw = Graphics g casted as a Graphics2D object
+        draw.setFont(new Font("Consolas", Font.PLAIN, 20)); /// set the font for Graphics g to consolas
+        switch (screen) {
+            case (0): //Main Menu
+                draw.drawString("Title Screen", getWidth() / 2 - (g.getFontMetrics().stringWidth("Title Screen")) / 2, getHeight() / 4 - 50);
+                draw.drawString("High Scores", getWidth() / 2 - (g.getFontMetrics().stringWidth("High Scores")) / 2, getHeight() / 2 - 50);
+                draw.drawString("Play", getWidth() / 2 - (g.getFontMetrics().stringWidth("Play")) / 2, getHeight() / 4 * 3 - 50);
+                draw.drawString("Exit", getWidth() / 2 - (g.getFontMetrics().stringWidth("Exit")) / 2, getHeight() - 50);
+                draw.drawRect(getWidth() / 2 - (g.getFontMetrics().stringWidth("Title Screen")) / 2 - 5, getHeight() / 4 * menu - 68, 140, 20);
 
-        guy.rotate(pos, 400, 0); /// rotate Graphics2D guy in circle
+                if (press[2] == true && menu > 2) {
+                    menu -= 1;
+                    press[2] = false;
+                } else if (press[3] == true && menu < 4) {
+                    menu += 1;
+                    press[3] = false;
+                } else if (press[4] == true) {
+                    press[4] = false;
+                    switch (menu) {
+                        case (2):
+                            screen = 1;
+                            break;
+                        case (3):
+                            screen = 2;
+                            score = 0;
+                            count.start(); //starts the timer
+                            break;
+                        case (4):
+                            try {
+                                FileWriter fw = new FileWriter("scores.txt");//set place to write to in "Files"
+                                PrintWriter pw = new PrintWriter(fw); //starts writing
+                                for (int i = 0; i < 10; i++) {
+                                    pw.println(scores.get(i));
+                                    System.out.println(scores.get(i));
+                                }
+                                pw.close(); //stop writing
+                            } catch (IOException a) {
+                                System.out.println("ERROR");
+                            }
+                            System.exit(0);
+                            break;
+                    }
+                }
+                break;
+            case (1): //highscore
+                draw.drawString("HIGHSCORES", 100, 30);
+                for (int i = 0; i < 10; i++) {
+                    draw.drawString(scores.get(i) + "", 100, 60 + 30 * i);
+                }
+                break;
+            case (2): // Game
+                /// ALL THE CODE BELOW WILL ROTATE        
+                draw.rotate(pos, 400, 0); /// rotate Graphics2D draw in circle
+                int size = (int) Math.pow(2, 0.15 * (time));
+                draw.drawImage(new ImageIcon("space.png").getImage(), -550, -950, getWidth() * 2 + 300, getWidth() * 2 + 300, this); /// draw the background image
+                draw.drawImage(new ImageIcon("airplane.png").getImage(), bullx - size / 2, bully - size / 2, size, size, this);
+                draw.rotate(-pos, 400, 0); //all the code below wont rotate
 
-        /// ALL THE CODE BELOW WILL ROTATE
-        ///-800, -600, 45, 45
-        int size = (int) Math.pow(2, 0.15 * (time));
-        guy.drawImage(new ImageIcon("space.png").getImage(), -550, -950, getWidth() * 2 + 300, getWidth() * 2 + 300, this); /// draw the background image
-        guy.drawImage(new ImageIcon("airplane.png").getImage(), bullx - size / 2, bully - size / 2, size, size, this);
-        guy.rotate(-pos, 400, 0); //all the code below wont rotate
-        System.out.println(size);
-        /// ALL THE CODE BELOW WILL NOT ROTATE
-//        guy.drawImage(new ImageIcon("man.jpg").getImage(), 350, 300, 100, 150, this);
-        guy.drawImage(new ImageIcon("cockpit.png").getImage(), 000, 200, 800, 400, this);
+                /// ALL THE CODE BELOW WILL NOT ROTATE   
+                draw.drawString("SCORE: " + score, 300, 30); /// draw a string that lists the score at 300 300
+                draw.drawImage(new ImageIcon("cockpit.png").getImage(), 000, 200, 800, 400, this);
 
-        guy.drawLine(400, 0, (int) (Math.cos(-0.15 + (Math.PI / 2)) * 800) + 400, (int) (Math.sin(-0.15 + (Math.PI / 2)) * 800));
-        guy.drawLine(400, 0, (int) (Math.cos(0.15 + (Math.PI / 2)) * 800) + 400, (int) (Math.sin(0.15 + (Math.PI / 2)) * 800));
+                draw.drawLine(400, 0, (int) (Math.cos(-0.15 + (Math.PI / 2)) * 800) + 400, (int) (Math.sin(-0.15 + (Math.PI / 2)) * 800));
+                draw.drawLine(400, 0, (int) (Math.cos(0.15 + (Math.PI / 2)) * 800) + 400, (int) (Math.sin(0.15 + (Math.PI / 2)) * 800));
 
-        //guy.drawRect((int) (Math.cos(pos + (Math.PI / 2)) * 400) + 400, (int) (Math.sin(pos + (Math.PI / 2)) * 400), 30, 30);
+                if (press[0] == true) { //checks which key is being pressed
+                    pos -= .04; //moves left
+                    if (pos <= 0) {
+                        pos = Math.PI * 2;
+                    }
+                } else if (press[1] == true) {
+                    pos += .04; //moves right
+                    if (pos >= Math.PI * 2) {
+                        pos = 0;
+                    }
+                }
+
+                if (press[2] == true) { //checks which key is being pressed
+                    //shoot            
+                    if (pos <= rand + 0.15 && pos >= rand - 0.15) { //checks if plane is within the radian range
+                        time = 200; //resets time and position
+                        bullx = 3000;
+                        score++;
+                    }
+                } else if (press[3] == true) {
+                    //power
+                }
+                if (time > 99 && time < 110 && pos <= rand + 0.15 && pos >= rand - 0.15) { //if too close gameover
+                    screen = 2;
+                    score = 0;
+                }
+                break;
+            case (3): //add score
+                scores.add(score);
+                Collections.sort(scores, Collections.reverseOrder());
+                break;
+            case (4)://Game over sceen
+                draw.drawString("GAME OVER", 300, 32);
+                draw.drawString("SCORE: " + score, 250, 132);
+
+                screen = 4;
+                break;
+        }
         super.paintComponents(g);
-
-        if (press[0] == true) { //checks which key is being pressed
-            pos -= .04; //moves left
-            if (pos <= 0) {
-                pos = Math.PI * 2;
-            }
-        } else if (press[1] == true) {
-            pos += .04; //moves right
-            if (pos >= Math.PI * 2) {
-                pos = 0;
-            }
-        }
-
-        if (press[2] == true) { //checks which key is being pressed
-            //shoot            
-            if (pos <= rand + 0.15 && pos >= rand - 0.15) {
-                time = 200;
-                bullx = 3000;
-                score++;
-            }
-        } else if (press[3] == true) {
-            //power
-        }
-        if (time > 99 && time < 110 && pos <= rand + 0.15 && pos >= rand - 0.15) {
-            System.out.println("GAMEOVER");
-            score = 0;
-        }
-
     }
 
     @Override
@@ -135,6 +201,7 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+
         if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_LEFT) {
             press[0] = true;
         } else if (e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -143,6 +210,14 @@ public class CulmWill extends JPanel implements ActionListener, KeyListener {
             press[2] = true;
         } else if (e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_DOWN) {
             press[3] = true;
+        } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            press[4] = true;
+        } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            if (screen == 2) {
+                screen = 3;
+            } else {
+                screen = 0;
+            }
         }
     }
 
