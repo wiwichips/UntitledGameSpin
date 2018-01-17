@@ -63,9 +63,9 @@ public class Aircraft {
     }
     
     public void grow(){
+        age++;
         sizeX=(int) Math.pow(2, 0.15 * (age));
         sizeY=(int) Math.pow(2, 0.15 * (age));
-        age++;
     }
     
     
