@@ -62,6 +62,12 @@ public class Aircraft {
         return posistionY; // return statement
     }
     
+    public void grow(){
+        sizeX=(int) Math.pow(2, 0.15 * (age));
+        sizeY=(int) Math.pow(2, 0.15 * (age));
+    }
+    
+    
     public void setPosistionX(int posistionX){
         this.posistionX=posistionX;
     }
