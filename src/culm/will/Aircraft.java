@@ -62,12 +62,14 @@ public class Aircraft {
         return posistionY; // return statement
     }
     
+    /**
+     * Grows the size of the image on screen and increments age
+     */
     public void grow(){
         age++;
         sizeX=(int) Math.pow(2, 0.15 * (age));
         sizeY=(int) Math.pow(2, 0.15 * (age));
     }
-    
     
     public void setPosistionX(int posistionX){
         this.posistionX=posistionX;
@@ -103,6 +105,10 @@ public class Aircraft {
     
     public double getAngle(){
         return angle; 
+    }
+    
+    public int getAge(){
+        return age; 
     }
     
     public String getColour(){
