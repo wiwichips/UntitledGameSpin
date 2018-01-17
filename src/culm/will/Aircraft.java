@@ -10,9 +10,8 @@ package culm.will;
  * @author wipri9236
  */
 public class Aircraft {
-    // GLOBAL VARIABLES
         // Variables involving posistion
-    private double angle; // angle in radians
+    private double angle; 
     private int posistionX; // the horizontal posistion on the screen
     private int posistionY; // the vertical posistion on the screen
     private int radius; // radius from center of the screen
@@ -26,13 +25,13 @@ public class Aircraft {
     
     /**
      * Aircraft Constructor (purple)
-     * @param angle 
+     * @param angle
      */
     public Aircraft(double angle){
-        colour="purpleAircraft.png";
-        posistionX=angleInRadiansToPosistionX(angle);
-        posistionY=angleInRadiansToPosistionY(angle);
-        age=0;
+        colour="purpleAircraft.png"; // set the colour as the default (purple)
+        posistionX=angleInRadiansToPosistionX(angle); // set the initial horizontal posistion 
+        posistionY=angleInRadiansToPosistionY(angle); // set the initial vertical posistion
+        age=0; // set the inital age of the aircraft to 0
         sizeX=0;
         sizeY=0;
     }    
@@ -93,6 +92,10 @@ public class Aircraft {
     
     public int getSizeY(){
         return sizeY;
+    }
+    
+    public double getAngle(){
+        return angle; 
     }
     
     public String getColour(){
